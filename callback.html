@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Authorization — Vala e Kuqe</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .codebox {
+      background: #0f0f0f;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1rem 1.1rem;
+      margin-top: 1rem;
+      word-break: break-all;
+      font-family: "SF Mono", Menlo, Consolas, monospace;
+      font-size: 0.9rem;
+    }
+    .label { color: var(--muted); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.06em; }
+    button {
+      margin-top: 1.2rem;
+      background: var(--red);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 0.7rem 1.2rem;
+      font-size: 0.95rem;
+      cursor: pointer;
+    }
+    button:hover { background: var(--red-soft); }
+    .err { color: var(--red-soft); }
+  </style>
+</head>
+<body>
+  <header>
+    <nav class="nav">
+      <div class="brand"><span class="mark"></span> <a href="index.html" style="color:inherit">Vala e Kuqe</a></div>
+    </nav>
+  </header>
+
+  <main class="doc">
+    <h1>Authorization received</h1>
+    <p>Copy the authorization code below and paste it into the local upload tool when prompted.</p>
+
+    <div id="ok" style="display:none">
+      <p class="label">Authorization code</p>
+      <div class="codebox" id="code"></div>
+      <p class="label" style="margin-top:1rem">State</p>
+      <div class="codebox" id="state"></div>
+      <button id="copy">Copy code</button>
+    </div>
+
+    <div id="bad" style="display:none">
+      <p class="err">No authorization code found in the URL. Please restart the authorization from the upload tool.</p>
+      <div class="codebox" id="rawerr"></div>
+    </div>
+  </main>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var code = params.get("code");
+      var state = params.get("state");
+      var error = params.get("error");
+
+      if (code) {
+        document.getElementById("ok").style.display = "block";
+        document.getElementById("code").textContent = code;
+        document.getElementById("state").textContent = state || "(none)";
+        document.getElementById("copy").addEventListener("click", function () {
+          navigator.clipboard.writeText(code);
+          this.textContent = "Copied";
+        });
+      } else {
+        document.getElementById("bad").style.display = "block";
+        document.getElementById("rawerr").textContent =
+          error ? ("error: " + error + " — " + (params.get("error_description") || "")) : window.location.search;
+      }
+    })();
+  </script>
+</body>
+</html>
